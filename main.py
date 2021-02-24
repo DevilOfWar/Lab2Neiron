@@ -9,61 +9,70 @@ def transform(x, n):
 
 
 def f(x):
-    return 1/(1 + np.exp(-x))
+    return 1 / (1 + np.exp(-x))
+
+def nonlin(x,deriv=False):
+	if(deriv==True):
+           return f(x)*(1-f(x))
+	return f(x)
 
 
-def df(x):
-    return np.exp(-x) / ((1 + np.exp(-x)) ** 2)
-
-
-def go_foward(input):
-    sum = np.dot(W1, input)
-    out = np.array([f(x) for x in sum])
-    sum = np.dot(W2, out)
-    y = f(sum)
-    return (y, out)
-
-
-def train(epoch):
-    global W2, W1
-    lmd = 0.025
-    N = 500
-    count = len(epoch)
-    for k in range(N):
-        x = epoch[np.random.randint(0, count)]
-        y, out = go_foward(x[0:6])
-        e = y - x[-1]
-        delta = e*df(y)
-        W2[0] = W2[0] - lmd * delta * out[0]
-        W2[1] = W2[1] - lmd * delta * out[1]
-        delta2 = W2 * delta * df(out)
-        W1[0] = W1[0] - lmd * delta2[0] * np.array(x[0:6])
-        W1[1] = W1[1] - lmd * delta2[1] * np.array(x[0:6])
-
-
-epoch = [[0, 0, 0, 0, 0, 0, 0]]
+inputData = [[0, 0, 0, 0, 0, 0]]
+outputData = [0]
 n = [1, 4, 30, 4, 12, 1]
 flag = False
 with open("tests.txt", "r") as file:
     for line in file:
         list = line.split(" ")
-        if flag is False:
-            flag = True
-        else:
-            epoch.append([0, 0, 0, 0, 0, 0, 0])
+        if flag is True:
+            inputData.append([0, 0, 0, 0, 0, 0])
         index = 0
         for element in list:
             if element != "\n":
                 element_float = float(element)
-                if index < 6:
-                    epoch[-1][index] = transform(element_float, n[index])
+                if index < 5:
+                    inputData[-1][index] = transform(element_float, n[index])
                 else:
-                    epoch[-1][index] = element_float
+                    if flag is False:
+                        outputData[-1] = element_float
+                    else:
+                        outputData.append(element_float)
                 index = index + 1
-epoch = np.array(epoch)
-W1 = np.array([[-0.11, 0.31, 0.47, 0.29, -0.5, 0.47], [0.4, 0.2, 0.26, -0.3, -0.47, -0.1]])
-W2 = np.array([0.5, -0.5])
-train(epoch)
-for x in epoch:
-    y, out = go_foward(x[0:6])
-    print(f"Выходное значение НС: {y} => {x[-1]}")
+        if flag is False:
+            flag = True
+
+inputData = np.array(inputData)
+outputData = np.array(outputData)
+weight1 = 2 * np.random.random((6,2)) - 1
+weight2 = 2 * np.random.random((2,1)) - 1
+learnTests = []
+learnTestsAns = []
+for j in range(100):
+    i = np.random.randint(0, len(inputData))
+    learnTests.append(inputData[i])
+    learnTestsAns.append(outputData[i])
+
+AnsUnlearned = nonlin(np.dot(nonlin(np.dot(inputData, weight1)), weight2))
+
+for j in range(1000):
+    layer1 = learnTests
+    layer2 = nonlin(np.dot(layer1, weight1))
+    layer3 = nonlin(np.dot(layer2, weight2)).T
+    layerError3 = np.subtract(learnTestsAns, layer3)
+    layerDelta3 = np.multiply(layerError3, nonlin(layer3, True))
+    layerError2 = layerDelta3.T.dot(weight2.T)
+    layerDelta2 = np.multiply(layerError2, nonlin(layer2, True))
+    weight2 = np.add(weight2, layer2.T.dot(layerDelta3.T))
+    weight1 = np.add(weight1, np.array(layer1).T.dot(layerDelta2))
+
+AnsLearned = nonlin(np.dot(nonlin(np.dot(inputData, weight1)), weight2))
+deltaUnlearned = 0
+deltaLearned = 0
+for j in range(0, len(inputData)):
+    print(f"{j} тест.\nВходные данные:{inputData[j]}.\nОжидаемый выход:{outputData[j]}.\nДо обучения:{AnsUnlearned[j]}.\nПосле обучения:{AnsLearned[j]}\n")
+    print(f"Погрешность до обучения:{outputData[j] - AnsUnlearned[j]}.\nПогрешность после обучения:{outputData[j] - AnsLearned[j]}.\n")
+    deltaUnlearned += abs(outputData[j] - AnsUnlearned[j])
+    deltaLearned += abs(outputData[j] - AnsLearned[j])
+deltaUnlearned = deltaUnlearned / 1000.0
+deltaLearned = deltaLearned / 1000.0
+print(f"Средняя погрешность до обучения:{deltaUnlearned}; после обучения:{deltaLearned}.")
