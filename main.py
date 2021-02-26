@@ -19,7 +19,7 @@ def nonlin(x,deriv=False):
 
 inputData = [[0, 0, 0, 0, 0, 0]]
 outputData = [0]
-n = [1, 4, 30, 4, 12, 1]
+n = [1.0, 4.0, 30.0, 4.0, 12.0, 1.0]
 flag = False
 with open("tests.txt", "r") as file:
     for line in file:
@@ -30,7 +30,7 @@ with open("tests.txt", "r") as file:
         for element in list:
             if element != "\n":
                 element_float = float(element)
-                if index < 5:
+                if index <= 5:
                     inputData[-1][index] = transform(element_float, n[index])
                 else:
                     if flag is False:
@@ -43,36 +43,110 @@ with open("tests.txt", "r") as file:
 
 inputData = np.array(inputData)
 outputData = np.array(outputData)
-weight1 = 2 * np.random.random((6,2)) - 1
-weight2 = 2 * np.random.random((2,1)) - 1
-learnTests = []
-learnTestsAns = []
-for j in range(100):
-    i = np.random.randint(0, len(inputData))
-    learnTests.append(inputData[i])
-    learnTestsAns.append(outputData[i])
+weight1 = np.random.random((6,2)) - 0.5
+weight2 = np.random.random((2,1)) - 0.5
+
+print(f"До обучения:")
+print(f"{weight1.T} - весы первого уровня")
+print(f"{weight2.T} - весы второго уровня")
 
 AnsUnlearned = nonlin(np.dot(nonlin(np.dot(inputData, weight1)), weight2))
+
+learnTests = [[0, 0, 0, 0, 0, 0],
+              [0, 0, 0, 0, 0, 1],
+              [0, 0, 0, 0, 1, 0],
+              [0, 0, 0, 0, 1, 1],
+              [0, 0, 0, 1, 0, 0],
+              [0, 0, 0, 1, 0, 1],
+              [0, 0, 0, 1, 1, 0],
+              [0, 0, 0, 1, 1, 1],
+              [0, 0, 1, 0, 0, 0],
+              [0, 0, 1, 0, 0, 1],
+              [0, 0, 1, 0, 1, 0],
+              [0, 0, 1, 0, 1, 1],
+              [0, 0, 1, 1, 0, 0],
+              [0, 0, 1, 1, 0, 1],
+              [0, 0, 1, 1, 1, 0],
+              [0, 0, 1, 1, 1, 1],
+              [0, 1, 0, 0, 0, 0],
+              [0, 1, 0, 0, 0, 1],
+              [0, 1, 0, 0, 1, 0],
+              [0, 1, 0, 0, 1, 1],
+              [0, 1, 0, 1, 0, 0],
+              [0, 1, 0, 1, 0, 1],
+              [0, 1, 0, 1, 1, 0],
+              [0, 1, 0, 1, 1, 1],
+              [0, 1, 1, 0, 0, 0],
+              [0, 1, 1, 0, 0, 1],
+              [0, 1, 1, 0, 1, 0],
+              [0, 1, 1, 0, 1, 1],
+              [0, 1, 1, 1, 0, 0],
+              [0, 1, 1, 1, 0, 1],
+              [0, 1, 1, 1, 1, 0],
+              [0, 1, 1, 1, 1, 1],
+              [1, 0, 0, 0, 0, 0],
+              [1, 0, 0, 0, 0, 1],
+              [1, 0, 0, 0, 1, 0],
+              [1, 0, 0, 0, 1, 1],
+              [1, 0, 0, 1, 0, 0],
+              [1, 0, 0, 1, 0, 1],
+              [1, 0, 0, 1, 1, 0],
+              [1, 0, 0, 1, 1, 1],
+              [1, 0, 1, 0, 0, 0],
+              [1, 0, 1, 0, 0, 1],
+              [1, 0, 1, 0, 1, 0],
+              [1, 0, 1, 0, 1, 1],
+              [1, 0, 1, 1, 0, 0],
+              [1, 0, 1, 1, 0, 1],
+              [1, 0, 1, 1, 1, 0],
+              [1, 0, 1, 1, 1, 1],
+              [1, 1, 0, 0, 0, 0],
+              [1, 1, 0, 0, 0, 1],
+              [1, 1, 0, 0, 1, 0],
+              [1, 1, 0, 0, 1, 1],
+              [1, 1, 0, 1, 0, 0],
+              [1, 1, 0, 1, 0, 1],
+              [1, 1, 0, 1, 1, 0],
+              [1, 1, 0, 1, 1, 1],
+              [1, 1, 1, 0, 0, 0],
+              [1, 1, 1, 0, 0, 1],
+              [1, 1, 1, 0, 1, 0],
+              [1, 1, 1, 0, 1, 1],
+              [1, 1, 1, 1, 0, 0],
+              [1, 1, 1, 1, 0, 1],
+              [1, 1, 1, 1, 1, 0],
+              [1, 1, 1, 1, 1, 1]]
+learnTestsAns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0]
+learnTests = np.array(learnTests)
+learnSpeed = 0.1
 
 for j in range(1000):
     layer1 = learnTests
     layer2 = nonlin(np.dot(layer1, weight1))
     layer3 = nonlin(np.dot(layer2, weight2)).T
+    delta = 0
+    for i in range(0, len(learnTestsAns)):
+        delta += abs(learnTestsAns[i] - layer3.T[i])
+    delta = delta / len(learnTestsAns)
+    print(f"{j} итерация обучения. Средняя погрешность:{delta}.")
     layerError3 = np.subtract(learnTestsAns, layer3)
     layerDelta3 = np.multiply(layerError3, nonlin(layer3, True))
     layerError2 = layerDelta3.T.dot(weight2.T)
     layerDelta2 = np.multiply(layerError2, nonlin(layer2, True))
-    weight2 = np.add(weight2, layer2.T.dot(layerDelta3.T))
-    weight1 = np.add(weight1, np.array(layer1).T.dot(layerDelta2))
+    weight2 = np.add(weight2, layer2.T.dot(layerDelta3.T) * learnSpeed)
+    weight1 = np.add(weight1, np.array(layer1).T.dot(layerDelta2) * learnSpeed)
+    print(f"{weight1.T} - весы первого уровня")
+    print(f"{weight2.T} - весы второго уровня")
 
 AnsLearned = nonlin(np.dot(nonlin(np.dot(inputData, weight1)), weight2))
+
 deltaUnlearned = 0
 deltaLearned = 0
 for j in range(0, len(inputData)):
-    print(f"{j} тест.\nВходные данные:{inputData[j]}.\nОжидаемый выход:{outputData[j]}.\nДо обучения:{AnsUnlearned[j]}.\nПосле обучения:{AnsLearned[j]}\n")
+    print(f"{j} тест.\nПреобразованные входные данные:{inputData[j]}.\nОжидаемый выход:{outputData[j]}.\nДо обучения:{AnsUnlearned[j]} -> {np.around(AnsUnlearned[j])}.\nПосле обучения:{AnsLearned[j]} -> {np.around(AnsLearned[j])}.\n")
     print(f"Погрешность до обучения:{outputData[j] - AnsUnlearned[j]}.\nПогрешность после обучения:{outputData[j] - AnsLearned[j]}.\n")
     deltaUnlearned += abs(outputData[j] - AnsUnlearned[j])
     deltaLearned += abs(outputData[j] - AnsLearned[j])
-deltaUnlearned = deltaUnlearned / 1000.0
-deltaLearned = deltaLearned / 1000.0
+deltaUnlearned = deltaUnlearned / len(outputData)
+deltaLearned = deltaLearned / len(outputData)
 print(f"Средняя погрешность до обучения:{deltaUnlearned}; после обучения:{deltaLearned}.")
