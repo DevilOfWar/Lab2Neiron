@@ -123,7 +123,7 @@ learnTestsAns = np.array(learnTestsAns)
 learnTests = np.array(learnTests)
 learnSpeed = 0.1
 
-for j in range(100):
+for j in range(1000):
     layer1 = learnTests
     layer2 = nonlin(np.dot(layer1, weight1))
     layer3 = nonlin(np.dot(layer2, weight2)).T
@@ -146,9 +146,9 @@ AnsLearned = nonlin(np.dot(nonlin(np.dot(inputData, weight1)), weight2))
 deltaUnlearned = 0
 deltaLearned = 0
 for j in range(0, len(inputData)):
-    print(f"{j} тест.\nПреобразованные входные данные:{inputData[j]}.\nОжидаемый выход:{outputData[j]}.\nДо обучения:{AnsUnlearned[j]} -> {np.around(AnsUnlearned[j])}.\nПосле обучения:{AnsLearned[j]} -> {np.around(AnsLearned[j])}.\n")
-    deltaUnlearned += abs(outputData[j] - np.around(AnsUnlearned[j]))
-    deltaLearned += abs(outputData[j] - np.around(AnsLearned[j]))
+    print(f"{j} тест.\nПреобразованные входные данные:{inputData[j]}.\nОжидаемый выход:{outputData[j]}.\nДо обучения:{AnsUnlearned[j]} -> {round(AnsUnlearned[j][0])}.\nПосле обучения:{AnsLearned[j]} -> {round(AnsLearned[j][0])}.\n")
+    deltaUnlearned += abs(outputData[j] - round(AnsUnlearned[j][0]))
+    deltaLearned += abs(outputData[j] - round(AnsLearned[j][0]))
 deltaUnlearned = deltaUnlearned / len(outputData)
 deltaLearned = deltaLearned / len(outputData)
-print(f"Средняя погрешность до обучения:{deltaUnlearned}; после обучения:{deltaLearned}.")
+print(f"Средняя точность до обучения:{1 - deltaUnlearned}; после обучения:{1 - deltaLearned}.")
