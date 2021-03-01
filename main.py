@@ -21,7 +21,7 @@ inputData = [[0, 0, 0, 0, 0, 0]]
 outputData = [0]
 n = [1.0, 4.0, 30.0, 4.0, 12.0, 1.0]
 flag = False
-with open("tests.txt", "r") as file:
+with open("tests1.txt", "r") as file:
     for line in file:
         list = line.split(" ")
         if flag is True:
@@ -117,10 +117,13 @@ learnTests = [[0, 0, 0, 0, 0, 0],
               [1, 1, 1, 1, 1, 0],
               [1, 1, 1, 1, 1, 1]]
 learnTestsAns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0]
+learnTestsAns[37] = 1
+learnTestsAns[49] = 1
+learnTestsAns = np.array(learnTestsAns)
 learnTests = np.array(learnTests)
 learnSpeed = 0.1
 
-for j in range(1000):
+for j in range(100):
     layer1 = learnTests
     layer2 = nonlin(np.dot(layer1, weight1))
     layer3 = nonlin(np.dot(layer2, weight2)).T
@@ -144,9 +147,8 @@ deltaUnlearned = 0
 deltaLearned = 0
 for j in range(0, len(inputData)):
     print(f"{j} тест.\nПреобразованные входные данные:{inputData[j]}.\nОжидаемый выход:{outputData[j]}.\nДо обучения:{AnsUnlearned[j]} -> {np.around(AnsUnlearned[j])}.\nПосле обучения:{AnsLearned[j]} -> {np.around(AnsLearned[j])}.\n")
-    print(f"Погрешность до обучения:{outputData[j] - AnsUnlearned[j]}.\nПогрешность после обучения:{outputData[j] - AnsLearned[j]}.\n")
-    deltaUnlearned += abs(outputData[j] - AnsUnlearned[j])
-    deltaLearned += abs(outputData[j] - AnsLearned[j])
+    deltaUnlearned += abs(outputData[j] - np.around(AnsUnlearned[j]))
+    deltaLearned += abs(outputData[j] - np.around(AnsLearned[j]))
 deltaUnlearned = deltaUnlearned / len(outputData)
 deltaLearned = deltaLearned / len(outputData)
 print(f"Средняя погрешность до обучения:{deltaUnlearned}; после обучения:{deltaLearned}.")
